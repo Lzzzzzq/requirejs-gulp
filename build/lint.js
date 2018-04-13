@@ -50,6 +50,7 @@ gulp.task('lint', function() {
             }
           }
         })
-      );
+      )
+      .pipe(eslint.failAfterError());
   });
 });

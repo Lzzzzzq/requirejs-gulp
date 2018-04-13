@@ -10,8 +10,7 @@ require(['inner', 'test'], function(inner, test) {
   function ok(a, b, c){
 
   }
-  if (true) 
-  {
+  if (true) {
   } else {
   }
   inner.init();
