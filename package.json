@@ -4,8 +4,13 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
+		"dev": "gulp dev",
+    "build": "gulp build",
+    "lint": "gulp lint"
+  },
+  "pre-commit": [
+    "lint"
+  ],
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
@@ -38,6 +43,7 @@
 		"gulp-watch": "^5.0.0",
 		"imagemin-pngquant": "^5.1.0",
 		"jshint": "^2.9.5",
+		"pre-commit": "^1.2.2",
 		"require-dir": "^1.0.0",
 		"run-sequence": "^2.2.1",
 		"through2": "^2.0.3",
