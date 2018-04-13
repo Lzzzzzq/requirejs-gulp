@@ -1,1 +1,0 @@
-define("inner",[],function(){function n(){console.log("inner init1")}return{init:n}}),define("test",[],function(){function n(){console.log("test init12346")}return{init:n}}),require(["inner","test"],function(n,i){n.init(),i.init(),console.log(0x7048860f3ab2)}),define("index",function(){});
