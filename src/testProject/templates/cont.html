@@ -1,4 +1,11 @@
-<div class="contWrap" id="contWrap"></div>
-<script type="text/html" id="contWrap">
-
+<div class="contWrap itemBg" id="contWrap"></div>
+<script type="text/html" id="contWrapTemplate">
+  {{each list as item i}}
+    <div class="listItem clearfix textMain">
+      <div class="listItemData fl tl">{{i + 1}}</div>
+      <div class="listItemData fl tc">{{item.stockName}}</div>
+      <div class="listItemData fl tc">{{item.reporterName}}</div>
+      <div class="listItemData fl tr">{{item.date}}</div>
+    </div>
+  {{/each}}
 </script>

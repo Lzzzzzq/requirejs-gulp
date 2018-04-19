@@ -1,6 +1,6 @@
 define(function() {
   var store = {
-    list: [],
+    reportList: [],
   }
 
   return store
