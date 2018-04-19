@@ -7,14 +7,48 @@
   <title>测试项目</title>
   <script type="text/javascript" src="//s.thsi.cn/webprivate/components/art-template.js"></script>
   <script type="text/javascript" src="//s.thsi.cn/js/jquery-1.11.3.min.js"></script>
+  <link rel="stylesheet" href="//s.thsi.cn/webprivate/common/colors/colors.css">
+
   <!-- build:css -->
   <link rel="stylesheet" href="css/index.css">
   <!-- endbuild -->
+  <script>
+    /*rem设置*/
+    (function (doc, win) {
+      var docElm = doc.documentElement,
+        resizeEvt = 'orientationchange' in win ? 'orientationchange' : 'resize',
+        recalc = function () {
+          var clientWidth = docElm.clientWidth;
+          if (!clientWidth) {
+            return;
+          };
+          docElm.style.fontSize = clientWidth / 7.5 + 'px';
+        };
+      if (!doc.addEventListener) {
+        return;
+      };
+      win.addEventListener(resizeEvt, recalc, false);
+      doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+    /*黑夜模式*/
+    var isIOS = /iphone|ipad/gi.test(navigator.appVersion);
+    var ua = window.navigator.userAgent,
+      themeReg = /hxtheme\/(\S*)/,
+      appWrap = '<div class="app-wrap">';
+        console.log(ua.match(themeReg));
+    if (ua.match(themeReg)) {
+      if (ua.match(themeReg)[1] == 1) {
+        appWrap = '<div class="app-wrap black">';
+      }
+    }
+  </script>
 </head>
 
 <body>
-  <div class="app-wrap">
-    @@include('./templates/inner.html')
+  <script>document.write(appWrap)</script>
+    @@include('./templates/header.html') 
+    @@include('./templates/cont.html') 
+    @@include('./templates/footer.html')
   </div>
   <!-- build:js -->
   <script src="//s.thsi.cn/cb?js/require.min.js" data-main="js/index.js"></script>

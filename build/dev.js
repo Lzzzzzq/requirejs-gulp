@@ -109,6 +109,17 @@ gulp.task('devBuild', function() {
   });
 });
 
+// 重加载require.config.js
+gulp.task('auto-reload', function () {
+  watch(SRC_PATH + '**/require.config.js', function () {
+    console.log('|--------------------|');
+    console.log('|  require 文件修改  |');
+    console.log('|   server 重启中    |');
+    console.log('|--------------------|');
+    process.exit();
+  })
+})
+
 // 开发环境监听
 gulp.task('devWatch', function() {
   // 监听html文件改动
@@ -132,9 +143,10 @@ gulp.task('devWatch', function() {
 });
 
 // 开发环境本地服务
-gulp.task('dev', ['lint', 'devBuild', 'devWatch'], function() {
+gulp.task('dev', ['lint', 'devBuild', 'devWatch', 'auto-reload'], function() {
   browserSync.init({
-    open: 'ui',
+    // open: 'ui',
+    open: false,
     browser: ['chrome'],
     files: ['./dev/**'],
     server: {

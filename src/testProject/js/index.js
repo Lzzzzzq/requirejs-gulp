@@ -1,19 +1,4 @@
-require(['inner', 'test'], function(inner, test) {
-  var arr = ['foo', 'bar'];
-  var arr = ['foo', 'bar'];
-  var arr = [['foo'], 'bar'];
-  var arr = [['foo'], 'bar'];
-  var arr = [
-    'foo',
-    'bar',
-  ];
-  function ok(a, b, c){
-
-  }
-  if (true) {
-  } else {
-  }
-  inner.init();
-  test.init();
-  console.log(123456789101234);
+require(['cont'], function(cont) {
+  // 内容初始化
+  cont.init();
 });

@@ -1,6 +1,9 @@
 module.exports = {
   paths: {
-    inner: './components/inner',
-    test: './components/test',
+    actions: './store/actions',
+    getters: './store/getters',
+    store: './store/store',
+
+    cont: './components/cont/cont',
   },
 };
