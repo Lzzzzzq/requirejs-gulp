@@ -35,8 +35,8 @@ var DIST_PATH = ROOT_PATH + '/dist/';
 // 开发环境less编译
 gulp.task('devLess', function() {
   projectsConf.projects.map(item => {
-    let devPath = SRC_PATH + item + filePath.less;
-    let distPath = DEV_PATH + item + '/css';
+    var devPath = SRC_PATH + item + filePath.less;
+    var distPath = DEV_PATH + item + '/css';
     gulp
       .src(devPath)
       .pipe(plumber())
@@ -51,8 +51,8 @@ gulp.task('devLess', function() {
 // 开发环境html合并
 gulp.task('devHtml', function() {
   projectsConf.projects.map(item => {
-    let devPath = SRC_PATH + item + filePath.html;
-    let distPath = DEV_PATH + item;
+    var devPath = SRC_PATH + item + filePath.html;
+    var distPath = DEV_PATH + item;
     gulp
       .src(devPath)
       .pipe(plumber())
@@ -72,9 +72,9 @@ gulp.task('devHtml', function() {
 // 开发环境js合并
 gulp.task('devJs', function() {
   projectsConf.projects.map(item => {
-    let devPath = SRC_PATH + item + filePath.js;
-    let distPath = DEV_PATH + item + '/js';
-    let requirePath = require(SRC_PATH + item + '/js/require.config.js');
+    var devPath = SRC_PATH + item + filePath.js;
+    var distPath = DEV_PATH + item + '/js';
+    var requirePath = require(SRC_PATH + item + '/js/require.config.js');
     gulp
       .src(devPath)
       .pipe(plumber())
@@ -89,8 +89,8 @@ gulp.task('devJs', function() {
 // 开发环境img处理
 gulp.task('devImg', function() {
   projectsConf.projects.map(item => {
-    let devPath = SRC_PATH + item + filePath.img;
-    let distPath = DEV_PATH + item + '/images';
+    var devPath = SRC_PATH + item + filePath.img;
+    var distPath = DEV_PATH + item + '/images';
     gulp
       .src(devPath)
       .pipe(plumber())

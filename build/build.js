@@ -14,6 +14,15 @@ var rename = require('gulp-rename'); //重命名文件
 var cssMinify = require('gulp-clean-css'); //压缩css
 var rev = require('gulp-rev'); //对文件名加MD5后缀
 var revCollector = require('gulp-rev-collector'); //路径替换
+var revReplace = require('gulp-rev-replace'); //路径替换
+var base64 = require('gulp-base64'); //base64
+var cache = require('gulp-cache'); //gulp缓存配置，增量编译图片
+var imagemin = require('gulp-imagemin'); //压缩img
+var pngquant = require('imagemin-pngquant'); //处理img
+var runSequence = require('run-sequence'); //异步处理
+var md5 = require('gulp-md5-plus'); //md5
+var through = require('through2');
+var fs = require('fs');
 
 // 配置依赖
 var filePath = require('../conf/path.conf');
@@ -35,40 +44,23 @@ gulp.task('proLess', function() {
       .src(devPath)
       .pipe(debug({ title: '编译' }))
       .pipe(less())
+      .pipe(
+        base64({
+          maxImageSize: 80 * 1024, // bytes
+          debug: true,
+        })
+      )
+      .pipe(cssMinify())
       .pipe(rename(item + '.css'))
       .pipe(rev())
       .pipe(gulp.dest(distPath))
-      .pipe(rev.manifest())
-      .pipe(gulp.dest(REV_PATH + '/' + item));
-  });
-});
-
-// 生产环境html合并
-gulp.task('proHtml', function() {
-  projectsConf.projects.map(item => {
-    let devPath = SRC_PATH + item + filePath.html;
-    let distPath = DIST_PATH;
-    gulp
-      .src([REV_PATH + '/' + item + '/*.json', devPath])
-      .pipe(debug({ title: '编译' }))
       .pipe(
-        fileInclude({
-          prefix: '@@',
-          basepath: '@file'
+        rev.manifest({
+          path: REV_PATH + '/' + item,
+          merge: true,
         })
       )
-      .pipe(
-        htmlreplace({
-          css: filePath.public + '/css/' + item + '.css',
-          js: {
-            src: filePath.public + '/js/' + item + '.js',
-            tpl: '<script src="//s.thsi.cn/cb?js/require.min.js" data-main="%s"></script>'
-          }
-        })
-      )
-      .pipe(rename(item + '.html'))
-      .pipe(revCollector())
-      .pipe(gulp.dest(distPath));
+      .pipe(gulp.dest('./'));
   });
 });
 
@@ -83,6 +75,61 @@ gulp.task('proJs', function() {
       .pipe(debug({ title: '编译' }))
       .pipe(requirejsOptimize(requirePath))
       .pipe(rename(item + '.js'))
+      .pipe(rev())
+      .pipe(gulp.dest(distPath))
+      .pipe(
+        rev.manifest({
+          path: REV_PATH + '/' + item,
+          merge: true,
+        })
+      )
+      .pipe(gulp.dest('./'));
+  });
+});
+
+// 生产环境html合并
+gulp.task('proHtml', function() {
+  projectsConf.projects.map(item => {
+    let devPath = SRC_PATH + item + filePath.html;
+    let distPath = DIST_PATH;
+    gulp
+      .src(devPath)
+      .pipe(debug({ title: '编译' }))
+      .pipe(
+        fileInclude({
+          prefix: '@@',
+          basepath: '@file',
+        })
+      )
+      // .pipe(
+      //   htmlreplace({
+      //     css: filePath.public + '/css/' + item + '.css',
+      //     js: {
+      //       src: filePath.public + '/js/' + item + '.js',
+      //       tpl:
+      //         '<script src="//s.thsi.cn/cb?js/require.min.js" data-main="%s"></script>',
+      //     },
+      //   })
+      // )
+      .pipe(rename(item + '.html'))
+      .pipe(
+        through.obj(function(file, enc, cb) {
+          if (file.isNull()) {
+            this.push(file);
+            return cb();
+          }
+
+          if (file.isStream()) {
+            this.emit(
+              'error',
+              new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported')
+            );
+            return cb();
+          }
+
+          var contents = file.contents;
+        })
+      )
       .pipe(gulp.dest(distPath));
   });
 });
@@ -95,6 +142,15 @@ gulp.task('proImg', function() {
     gulp
       .src(devPath)
       .pipe(debug({ title: '编译' }))
+      .pipe(
+        cache(
+          imagemin({
+            progressive: true,
+            svgoPlugins: [{ removeViewBox: false }],
+            use: [pngquant()],
+          })
+        )
+      )
       .pipe(gulp.dest(distPath));
   });
 });
@@ -102,9 +158,6 @@ gulp.task('proImg', function() {
 // 生产环境清理dev文件夹并构建
 gulp.task('build', function() {
   del(DIST_PATH).then(() => {
-    gulp.start('proLess');
-    gulp.start('proHtml');
-    gulp.start('proJs');
-    gulp.start('proImg');
+    runSequence('proLess', 'proJs', 'proImg', 'proHtml');
   });
 });

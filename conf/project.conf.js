@@ -1,6 +1,6 @@
 module.exports = {
   projects: [
     'testProject',
-    // 'testProject1',
+    'testProject1',
   ],
 }
