@@ -1,24 +1,24 @@
 // 插件依赖
-var path = require('path');
-var del = require('del');
-var gulp = require('gulp');
-var plumber = require('gulp-plumber'); //gulp运行出错时不退出进程
-var sourcemaps = require('gulp-sourcemaps'); //生成sourcemap文件
-var less = require('gulp-less'); //编译less
-var debug = require('gulp-debug'); //To see what files are run through your Gulp pipeline
-var fileInclude = require('gulp-file-include'); //合并html
-var jshint = require('gulp-jshint'); //校验js
-var requirejsOptimize = require('gulp-requirejs-optimize'); //编译合并requirejs
-var browserSync = require('browser-sync').create(); //本地服务
-var watch = require('gulp-watch'); //监听文件改动
+const path = require('path');
+const del = require('del');
+const gulp = require('gulp');
+const plumber = require('gulp-plumber'); //gulp运行出错时不退出进程
+const sourcemaps = require('gulp-sourcemaps'); //生成sourcemap文件
+const less = require('gulp-less'); //编译less
+const debug = require('gulp-debug'); //To see what files are run through your Gulp pipeline
+const fileInclude = require('gulp-file-include'); //合并html
+const jshint = require('gulp-jshint'); //校验js
+const requirejsOptimize = require('gulp-requirejs-optimize'); //编译合并requirejs
+const browserSync = require('browser-sync').create(); //本地服务
+const watch = require('gulp-watch'); //监听文件改动
 
 /**
  * 相关配置
  * filePath 为文件匹配路径
  * projectsConf 为项目匹配路径
  */
-var filePath = require('../conf/path.conf');
-var projectsConf = require('../conf/project.conf');
+const filePath = require('../conf/path.conf');
+const projectsConf = require('../conf/project.conf');
 
 /**
  * 相关路径
@@ -27,16 +27,16 @@ var projectsConf = require('../conf/project.conf');
  * DEV_PATH 为开发环境下实时编译路径
  * DIST_PATH 为生产环境下编译生成路径
  */
-var ROOT_PATH = path.join(__dirname).slice(0, -5);
-var SRC_PATH = ROOT_PATH + '/src/';
-var DEV_PATH = ROOT_PATH + '/dev/';
-var DIST_PATH = ROOT_PATH + '/dist/';
+const ROOT_PATH = path.join(__dirname).slice(0, -5);
+const SRC_PATH = ROOT_PATH + '/src/';
+const DEV_PATH = ROOT_PATH + '/dev/';
+const DIST_PATH = ROOT_PATH + '/dist/';
 
 // 开发环境less编译
 gulp.task('devLess', function() {
   projectsConf.projects.map(item => {
-    var devPath = SRC_PATH + item + filePath.less;
-    var distPath = DEV_PATH + item + '/css';
+    let devPath = SRC_PATH + item + filePath.less;
+    let distPath = DEV_PATH + item + '/css';
     gulp
       .src(devPath)
       .pipe(plumber())
@@ -51,8 +51,8 @@ gulp.task('devLess', function() {
 // 开发环境html合并
 gulp.task('devHtml', function() {
   projectsConf.projects.map(item => {
-    var devPath = SRC_PATH + item + filePath.html;
-    var distPath = DEV_PATH + item;
+    let devPath = SRC_PATH + item + filePath.html;
+    let distPath = DEV_PATH + item;
     gulp
       .src(devPath)
       .pipe(plumber())
@@ -72,9 +72,9 @@ gulp.task('devHtml', function() {
 // 开发环境js合并
 gulp.task('devJs', function() {
   projectsConf.projects.map(item => {
-    var devPath = SRC_PATH + item + filePath.js;
-    var distPath = DEV_PATH + item + '/js';
-    var requirePath = require(SRC_PATH + item + '/js/require.config.js');
+    let devPath = SRC_PATH + item + filePath.js;
+    let distPath = DEV_PATH + item + '/js';
+    let requirePath = require(SRC_PATH + item + '/js/require.config.js');
     gulp
       .src(devPath)
       .pipe(plumber())
@@ -89,8 +89,8 @@ gulp.task('devJs', function() {
 // 开发环境img处理
 gulp.task('devImg', function() {
   projectsConf.projects.map(item => {
-    var devPath = SRC_PATH + item + filePath.img;
-    var distPath = DEV_PATH + item + '/images';
+    let devPath = SRC_PATH + item + filePath.img;
+    let distPath = DEV_PATH + item + '/images';
     gulp
       .src(devPath)
       .pipe(plumber())

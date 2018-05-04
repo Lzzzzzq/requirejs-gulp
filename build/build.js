@@ -1,28 +1,28 @@
 // 插件依赖
-var path = require('path');
-var del = require('del');
-var gulp = require('gulp');
-var plumber = require('gulp-plumber'); //gulp运行出错时不退出进程
-var sourcemaps = require('gulp-sourcemaps'); //生成sourcemap文件
-var less = require('gulp-less'); //编译less
-var debug = require('gulp-debug'); //To see what files are run through your Gulp pipeline
-var fileInclude = require('gulp-file-include'); //合并html
-var jshint = require('gulp-jshint'); //校验js
-var requirejsOptimize = require('gulp-requirejs-optimize'); //编译合并requirejs
-var htmlreplace = require('gulp-html-replace'); // 修改html内容
-var rename = require('gulp-rename'); //重命名文件
-var cssMinify = require('gulp-clean-css'); //压缩css
-var rev = require('gulp-rev'); //对文件名加MD5后缀
-var revCollector = require('gulp-rev-collector'); //路径替换
-var revReplace = require('gulp-rev-replace'); //路径替换
-var base64 = require('gulp-base64'); //base64
-var cache = require('gulp-cache'); //gulp缓存配置，增量编译图片
-var imagemin = require('gulp-imagemin'); //压缩img
-var pngquant = require('imagemin-pngquant'); //处理img
-var runSequence = require('run-sequence'); //异步处理
-var md5 = require('gulp-md5-plus'); //md5
-var through = require('through2');
-var fs = require('fs');
+const path = require('path');
+const del = require('del');
+const gulp = require('gulp');
+const plumber = require('gulp-plumber'); //gulp运行出错时不退出进程
+const sourcemaps = require('gulp-sourcemaps'); //生成sourcemap文件
+const less = require('gulp-less'); //编译less
+const debug = require('gulp-debug'); //To see what files are run through your Gulp pipeline
+const fileInclude = require('gulp-file-include'); //合并html
+const jshint = require('gulp-jshint'); //校验js
+const requirejsOptimize = require('gulp-requirejs-optimize'); //编译合并requirejs
+const htmlreplace = require('gulp-html-replace'); // 修改html内容
+const rename = require('gulp-rename'); //重命名文件
+const cssMinify = require('gulp-clean-css'); //压缩css
+const rev = require('gulp-rev'); //对文件名加MD5后缀
+const revCollector = require('gulp-rev-collector'); //路径替换
+const revReplace = require('gulp-rev-replace'); //路径替换
+const base64 = require('gulp-base64'); //base64
+const cache = require('gulp-cache'); //gulp缓存配置，增量编译图片
+const imagemin = require('gulp-imagemin'); //压缩img
+const pngquant = require('imagemin-pngquant'); //处理img
+const runSequence = require('run-sequence'); //异步处理
+const md5 = require('gulp-md5-plus'); //md5
+const through = require('through2');
+const fs = require('fs');
 
 // 读取文件
 function readFile (path) {
@@ -43,16 +43,16 @@ function readFile (path) {
 }
 
 // 配置依赖
-var filePath = require('../conf/path.conf');
-var projectsConf = require('../conf/project.conf');
+const filePath = require('../conf/path.conf');
+const projectsConf = require('../conf/project.conf');
 
 // 路径
-var ROOT_PATH = path.join(__dirname).slice(0, -5); //项目根路径
-var SRC_PATH = ROOT_PATH + '/src/'; //开发路径
-var DEV_PATH = ROOT_PATH + '/dev/'; //开发环境编译路径
-var DIST_PATH = ROOT_PATH + '/dist/'; //生产环境编译路径
-var REV_PATH = ROOT_PATH + '/rev'; //映射文件路径
-var PUBLIC_PATH = filePath.public;
+const ROOT_PATH = path.join(__dirname).slice(0, -5); //项目根路径
+const SRC_PATH = ROOT_PATH + '/src/'; //开发路径
+const DEV_PATH = ROOT_PATH + '/dev/'; //开发环境编译路径
+const DIST_PATH = ROOT_PATH + '/dist/'; //生产环境编译路径
+const REV_PATH = ROOT_PATH + '/rev'; //映射文件路径
+const PUBLIC_PATH = filePath.public;
 
 // 生产环境less编译
 gulp.task('proLess', function() {
