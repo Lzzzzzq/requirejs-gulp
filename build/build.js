@@ -24,6 +24,24 @@ var md5 = require('gulp-md5-plus'); //md5
 var through = require('through2');
 var fs = require('fs');
 
+// 读取文件
+function readFile (path) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, function(err, data) {
+      if (err) {
+        reject({
+          state: 0,
+          msg: err
+        });
+      }
+      resolve({
+        state: 1,
+        data: JSON.parse(data.toString())
+      })
+    });
+  })
+}
+
 // 配置依赖
 var filePath = require('../conf/path.conf');
 var projectsConf = require('../conf/project.conf');
@@ -34,13 +52,14 @@ var SRC_PATH = ROOT_PATH + '/src/'; //开发路径
 var DEV_PATH = ROOT_PATH + '/dev/'; //开发环境编译路径
 var DIST_PATH = ROOT_PATH + '/dist/'; //生产环境编译路径
 var REV_PATH = ROOT_PATH + '/rev'; //映射文件路径
+var PUBLIC_PATH = filePath.public;
 
 // 生产环境less编译
 gulp.task('proLess', function() {
   projectsConf.projects.map(item => {
     let devPath = SRC_PATH + item + filePath.less;
     let distPath = DIST_PATH + '/css';
-    gulp
+    return gulp
       .src(devPath)
       .pipe(debug({ title: '编译' }))
       .pipe(less())
@@ -51,8 +70,15 @@ gulp.task('proLess', function() {
         })
       )
       .pipe(cssMinify())
-      .pipe(rename(item + '.css'))
       .pipe(rev())
+      .pipe(
+        through.obj(async function(file, enc, cb) {
+          let contents = file.contents.toString();
+          file.path = file.path.replace('index', item);
+          this.push(file);
+          cb();
+        })
+      )
       .pipe(gulp.dest(distPath))
       .pipe(
         rev.manifest({
@@ -70,12 +96,19 @@ gulp.task('proJs', function() {
     let devPath = SRC_PATH + item + filePath.js;
     let distPath = DIST_PATH + '/js';
     let requirePath = require(SRC_PATH + item + '/js/require.config.js');
-    gulp
+    return gulp
       .src(devPath)
       .pipe(debug({ title: '编译' }))
       .pipe(requirejsOptimize(requirePath))
-      .pipe(rename(item + '.js'))
       .pipe(rev())
+      .pipe(
+        through.obj(async function(file, enc, cb) {
+          let contents = file.contents.toString();
+          file.path = file.path.replace('index', item);
+          this.push(file);
+          cb();
+        })
+      )
       .pipe(gulp.dest(distPath))
       .pipe(
         rev.manifest({
@@ -92,45 +125,54 @@ gulp.task('proHtml', function() {
   projectsConf.projects.map(item => {
     let devPath = SRC_PATH + item + filePath.html;
     let distPath = DIST_PATH;
-    gulp
-      .src(devPath)
-      .pipe(debug({ title: '编译' }))
-      .pipe(
-        fileInclude({
-          prefix: '@@',
-          basepath: '@file',
-        })
-      )
-      // .pipe(
-      //   htmlreplace({
-      //     css: filePath.public + '/css/' + item + '.css',
-      //     js: {
-      //       src: filePath.public + '/js/' + item + '.js',
-      //       tpl:
-      //         '<script src="//s.thsi.cn/cb?js/require.min.js" data-main="%s"></script>',
-      //     },
-      //   })
-      // )
-      .pipe(rename(item + '.html'))
-      .pipe(
-        through.obj(function(file, enc, cb) {
-          if (file.isNull()) {
-            this.push(file);
-            return cb();
-          }
+    return (
+      gulp
+        .src(devPath)
+        .pipe(debug({ title: '编译' }))
+        .pipe(
+          fileInclude({
+            prefix: '@@',
+            basepath: '@file',
+          })
+        )
+        .pipe(rename(item + '.html'))
+        .pipe(
+          through.obj(async function(file, enc, cb) {
+            if (file.isNull()) {
+              this.push(file);
+              return cb();
+            }
 
-          if (file.isStream()) {
-            this.emit(
-              'error',
-              new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported')
-            );
-            return cb();
-          }
+            if (file.isStream()) {
+              this.emit(
+                'error',
+                new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported')
+              );
+              return cb();
+            }
 
-          var contents = file.contents;
-        })
-      )
-      .pipe(gulp.dest(distPath));
+            let contents = file.contents.toString();
+
+            try {
+              let { data } = await readFile(REV_PATH + '/' + item);
+              for(let item in data) {
+                let reg = new RegExp('"(css|js)\/' + item + '"');
+                if (contents.match(reg)) {
+                  contents = contents.replace(reg, '"' + PUBLIC_PATH + '/' + data[item] + '"')
+                }
+              }
+              file.contents = new Buffer(contents);
+              this.push(file);
+              cb();
+            } catch (e) {
+              console.log(e);
+              this.push(file);
+              cb();
+            }
+          })
+        )
+        .pipe(gulp.dest(distPath))
+    );
   });
 });
 
@@ -139,7 +181,7 @@ gulp.task('proImg', function() {
   projectsConf.projects.map(item => {
     let devPath = SRC_PATH + item + filePath.img;
     let distPath = DIST_PATH + '/images';
-    gulp
+    return gulp
       .src(devPath)
       .pipe(debug({ title: '编译' }))
       .pipe(
@@ -155,9 +197,10 @@ gulp.task('proImg', function() {
   });
 });
 
+
 // 生产环境清理dev文件夹并构建
 gulp.task('build', function() {
-  del(DIST_PATH).then(() => {
-    runSequence('proLess', 'proJs', 'proImg', 'proHtml');
+  del([DIST_PATH, REV_PATH]).then(() => {
+    runSequence('proLess', 'proImg');
   });
 });

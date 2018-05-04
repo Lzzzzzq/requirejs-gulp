@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "watch.bat",
-		"build": "gulp build",
+		"build": "build.bat",
 		"lint": "gulp lint"
 	},
 	"pre-commit": [
