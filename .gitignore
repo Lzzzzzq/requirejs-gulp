@@ -6,4 +6,5 @@ node_modules
 .psd
 dist
 dev
+rev
 node/res
